@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <math.h>
 #include <fstream>
 
 using namespace std;
@@ -49,6 +50,25 @@ private:
 		vecBalls.emplace_back(b);
 	}
 
+	/*
+	void CountData(auto &ball)
+	{
+		//count the average move of the balls
+		int pyHorizontal[100] = {};	//initialize array for positions of balls Y only 
+		int vyHorizontal[100] = {};	//initialize array for velocities balls Y coord
+
+		int pyBox =((ScreenHeight() - ball.py) / 101);
+		pyHorizontal[pyBox]++;
+		int pyBox = 0;
+		
+		//vector<sBall> vecBalls;
+
+
+
+
+	}
+	*/
+
 
 public:
 	bool OnUserCreate()
@@ -64,10 +84,10 @@ public:
 		//AddBall(ScreenWidth() * 0.75f, ScreenHeight() * 0.5f, fDefaultRad);
 
 		
-		int ballsScale = 2;	//set scale of the balls 2-very small, 5- quite big
-		int ballsDiffrence = 7; //1 - the same balls, - larger - larger diffence between balls
+		int ballsScale = 3;	//set scale of the balls 2-very small, 5- quite big
+		int ballsDiffrence = 1; //1 - the same balls, - larger - larger diffence between balls
 
-		for (int i = 0; i <250; i++)		// Add X Random Balls
+		for (int i = 0; i <300; i++)		// Add X Random Balls
 
 			AddBall(rand() % ScreenWidth(), rand() % ScreenHeight(), rand() % ballsDiffrence + ballsScale);
 			//std::this_thread::sleep_for(std::chrono::milliseconds(777));
@@ -130,20 +150,18 @@ public:
 		vector<pair<sBall*, sBall*>> vecCollidingPairs;		//select colliding balls
 
 		
-		//count the average move of the balls
-		//int moveHorizontal[101] = {};
-		
 
 		// Update Ball Positions
 
 		for (auto &ball : vecBalls)
 		{
 
-			float friction = 0.10;		//set friction beetween balls		 1.0-nofriction	0.1<flows	0.17>stucks
+			float frictionX = 0.2;		//set friction beetween balls		 1.0-nofriction	0.1<flows	0.17>stucks
+			float frictionY = 0.2;
 
 			// Add Drag to emulate rolling friction
-			ball.ax = -ball.vx * friction;// +1.0f;
-			ball.ay = -ball.vy * friction;
+			ball.ax = -ball.vx * frictionX;
+			ball.ay = -ball.vy * frictionY;
 
 			// Update ball physics
 			ball.vx += ball.ax * fElapsedTime;
@@ -152,13 +170,14 @@ public:
 			ball.py += ball.vy * fElapsedTime;
 
 			
-			float frictionWx = 0.7;		//set friction on walls x
-			float frictionWy = 0.6;		//set friction on walls y
+			float frictionWx = 0.4;		//set friction on walls x
+			float frictionWy = 0.8;		//set friction on walls y
 			
+			frictionWx = fabsl(1 - frictionWx);
+			frictionWx = fabsl(1 - frictionWy);
 			// Wrap the balls around screen
 			
-			int speeding = 56; // set speeding constant on x wall
-
+			int speeding = 58; // set speeding constant on x wall
 
 			if (ball.px < 0)
 			{
@@ -169,8 +188,6 @@ public:
 				ball.px -= (float)ScreenWidth();
 				ball.vx += speeding;
 
-				//int box =( -ball.py+ScreenHeight() ) / 100;
-				//moveHorizontal[box]++;
 			}
 
 
@@ -276,8 +293,8 @@ public:
 			DrawWireFrameModel(modelCircle, ball.px, ball.py, atan2f(ball.vy, ball.vx), ball.radius, FG_WHITE);
 
 		// Draw static collisions
-		for (auto c : vecCollidingPairs)
-			DrawLine(c.first->px, c.first->py, c.second->px, c.second->py, PIXEL_SOLID, FG_RED);
+		//for (auto c : vecCollidingPairs)
+		//	DrawLine(c.first->px, c.first->py, c.second->px, c.second->py, PIXEL_SOLID, FG_RED);
 
 		// Draw Cue
 		if (pSelectedBall != nullptr)																				//comment this to avoid mouse selection
@@ -287,6 +304,9 @@ public:
 
 	}
 	
+	
+
+
 };
 
 
@@ -294,8 +314,8 @@ int main()
 {
 	CirclePhysics game;
 	int resolution = 4;					//	8 in error
-	int height = 1600/resolution;		//	1360/resolution		160 - in error
-	int length = 760/resolution;		//	760 / resolution	120 - in error
+	int height = 800/resolution;		//	1360/resolution		160 - in error
+	int length = 600/resolution;		//	760 / resolution	120 - in error
 	
 	if (game.ConstructConsole(height, length, resolution, resolution))		// if program exit with 0x0 try this setting  - fixed resolution (160, 120, 8, 8) an
 		game.Start();
