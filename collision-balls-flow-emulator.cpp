@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <fstream>
 
 using namespace std;
 
@@ -21,6 +22,7 @@ struct sBall
 class CirclePhysics : public olcConsoleGameEngine
 {
 public:
+	
 	CirclePhysics()
 	{
 		m_sAppName = L"Circle Physics";
@@ -38,7 +40,7 @@ private:
 		sBall b;
 		b.px = x; b.py = y;
 		//b.vx = rand()%50-25; b.vy = rand()%50-2.5;	//brownian motion condition
-		b.vx = rand() % 100 ; b.vy = rand() % 6 - 3;	//flow conditon vy - temperature
+		b.vx = rand() % 86 ; b.vy = rand() % 10 - 5;	//flow conditon vy - temperature
 		b.ax = 0; b.ay = 0;
 		b.radius = r;
 		b.mass = r * 10.0f;
@@ -62,10 +64,10 @@ public:
 		//AddBall(ScreenWidth() * 0.75f, ScreenHeight() * 0.5f, fDefaultRad);
 
 		
-		int ballsScale = 4;	//set scale of the balls 2-very small, 5- quite big
-		int ballsDiffrence = 2; //1 - the same balls, - larger - larger diffence between balls
+		int ballsScale = 2;	//set scale of the balls 2-very small, 5- quite big
+		int ballsDiffrence = 7; //1 - the same balls, - larger - larger diffence between balls
 
-		for (int i = 0; i <150; i++)		// Add X Random Balls
+		for (int i = 0; i <250; i++)		// Add X Random Balls
 
 			AddBall(rand() % ScreenWidth(), rand() % ScreenHeight(), rand() % ballsDiffrence + ballsScale);
 			//std::this_thread::sleep_for(std::chrono::milliseconds(777));
@@ -98,7 +100,7 @@ public:
 			}
 		}
 
-		if (m_mouse[0].bHeld)		//what happend if we stay on clicked 
+		if (m_mouse[1].bHeld)		//what happend if we stay on clicked left button
 		{
 			if (pSelectedBall != nullptr)
 			{
@@ -107,18 +109,18 @@ public:
 			}
 		}
 
-		if (m_mouse[0].bReleased)	
+		if (m_mouse[1].bReleased)	
 		{
 			pSelectedBall = nullptr;
 		}
 
-		if (m_mouse[1].bReleased)	//what happend if we relase click on mouse
+		if (m_mouse[0].bReleased)	//what happend if we relase click on mouse left button
 		{
 			if (pSelectedBall != nullptr)
 			{
 				// Apply velocity
-				pSelectedBall->vx = 5.0f * ((pSelectedBall->px) - (float)m_mousePosX);
-				pSelectedBall->vy = 5.0f * ((pSelectedBall->py) - (float)m_mousePosY);
+				pSelectedBall->vx = 100.0f * ((pSelectedBall->px) - (float)m_mousePosX);
+				pSelectedBall->vy = 100.0f * ((pSelectedBall->py) - (float)m_mousePosY);
 			}
 
 			pSelectedBall = nullptr;
@@ -127,12 +129,21 @@ public:
 
 		vector<pair<sBall*, sBall*>> vecCollidingPairs;		//select colliding balls
 
+		
+		//count the average move of the balls
+		//int moveHorizontal[101] = {};
+		
+
 		// Update Ball Positions
+
 		for (auto &ball : vecBalls)
 		{
+
+			float friction = 0.10;		//set friction beetween balls		 1.0-nofriction	0.1<flows	0.17>stucks
+
 			// Add Drag to emulate rolling friction
-			//ball.ax = -ball.vx * 0.8f;
-			//ball.ay = -ball.vy * 0.8f;
+			ball.ax = -ball.vx * friction;// +1.0f;
+			ball.ay = -ball.vy * friction;
 
 			// Update ball physics
 			ball.vx += ball.ax * fElapsedTime;
@@ -140,27 +151,46 @@ public:
 			ball.px += ball.vx * fElapsedTime;
 			ball.py += ball.vy * fElapsedTime;
 
+			
+			float frictionWx = 0.7;		//set friction on walls x
+			float frictionWy = 0.6;		//set friction on walls y
+			
 			// Wrap the balls around screen
-			if (ball.px < 0) ball.px += (float)ScreenWidth();
-			if (ball.px >= ScreenWidth()) ball.px -= (float)ScreenWidth();
-			if (ball.py < 0)	//if (ball.py < ScreenHeight()) ball.py += (float)ScreenHeight();     <- for overlap in y
+			
+			int speeding = 56; // set speeding constant on x wall
+
+
+			if (ball.px < 0)
 			{
-				ball.vy *= (-1.0);
-				ball.ay *= (-1.0);
+				ball.px += (float)ScreenWidth();
+			}
+			if (ball.px >= ScreenWidth()) 
+			{ 
+				ball.px -= (float)ScreenWidth();
+				ball.vx += speeding;
+
+				//int box =( -ball.py+ScreenHeight() ) / 100;
+				//moveHorizontal[box]++;
+			}
+
+
+			if (ball.py < ball.radius)	//if (ball.py < ScreenHeight()) ball.py += (float)ScreenHeight();     <- for overlap in y
+			{
+				//ball.py += (float)ScreenHeight();
+				ball.vx *= (frictionWx);
+				ball.vy *= (-1)*(frictionWy);
+				ball.py++;
 			}
 				
-			if (ball.py > ScreenHeight())	//if (ball.py >= ScreenHeight()) ball.py -= (float)ScreenHeight();	<- for overlap in y
+			if (ball.py >=	(ScreenHeight()-ball.radius))	//if (ball.py >= ScreenHeight()) ball.py -= (float)ScreenHeight();	<- for overlap in y
 			{
-				ball.vy *= (-1.0);
-				ball.ay *= (-1.0);
+				//ball.py -= (float)ScreenHeight();
+				ball.vx *= (frictionWx);
+				ball.vy *= (-1)*(frictionWy);
+				ball.py--;
 			}
-			/* Clamp velocity near zero
-			if (fabs(ball.vx*ball.vx + ball.vy*ball.vy) < 0.01f)
-			{
-				ball.vx = 0;
-				ball.vy = 0;
-			}
-			*/
+			
+		
 		}
 
 		// Static collisions, i.e. overlap
@@ -246,16 +276,17 @@ public:
 			DrawWireFrameModel(modelCircle, ball.px, ball.py, atan2f(ball.vy, ball.vx), ball.radius, FG_WHITE);
 
 		// Draw static collisions
-		//for (auto c : vecCollidingPairs)
-		//	DrawLine(c.first->px, c.first->py, c.second->px, c.second->py, PIXEL_SOLID, FG_RED);
+		for (auto c : vecCollidingPairs)
+			DrawLine(c.first->px, c.first->py, c.second->px, c.second->py, PIXEL_SOLID, FG_RED);
 
 		// Draw Cue
 		if (pSelectedBall != nullptr)																				//comment this to avoid mouse selection
-			DrawLine(pSelectedBall->px, pSelectedBall->py, m_mousePosX, m_mousePosY, PIXEL_SOLID, FG_BLUE);			//comment this to avoid mouse selection
+			DrawLine(pSelectedBall->px, pSelectedBall->py, m_mousePosX, m_mousePosY, FG_BLUE);			//comment this to avoid mouse selection
 
 		return true;
-	}
 
+	}
+	
 };
 
 
@@ -263,13 +294,17 @@ int main()
 {
 	CirclePhysics game;
 	int resolution = 4;					//	8 in error
-	int width = 1360/resolution;		//	1360/resolution		160 - in error
+	int height = 1600/resolution;		//	1360/resolution		160 - in error
 	int length = 760/resolution;		//	760 / resolution	120 - in error
 	
-	if (game.ConstructConsole(width, length, resolution, resolution))		// if program exit with 0x0 try this setting  - fixed resolution (160, 120, 8, 8) an
+	if (game.ConstructConsole(height, length, resolution, resolution))		// if program exit with 0x0 try this setting  - fixed resolution (160, 120, 8, 8) an
 		game.Start();
 	else
 		wcout << L"Could not construct console" << endl;
+
+	
+
+
 
 	return 0;
 };
