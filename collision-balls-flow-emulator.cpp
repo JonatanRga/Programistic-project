@@ -1,7 +1,9 @@
 #include <iostream>
 #include <string>
+#include <vector>
 #include <math.h>
 #include <fstream>
+
 
 using namespace std;
 
@@ -23,16 +25,34 @@ struct sBall
 class CirclePhysics : public olcConsoleGameEngine
 {
 public:
-	
+
 	CirclePhysics()
 	{
 		m_sAppName = L"Circle Physics";
 	}
 
+	vector<int> pyTab;		//initialize array for positions of balls Y coord
+	vector<int> vxTab;		//initialize array for velocities balls X coord
+
+	int checker = 0;
+	bool checker1 = 0;
+	int vMax = 11000;
+
+	bool exit(bool c)
+	{
+		if (m_mouse[0].bPressed || m_mouse[1].bPressed)		//what happend if we click on mouse button
+		{
+			c = 0;
+		}
+		return c;
+	}
+
+
 private:
 	vector<pair<float, float>> modelCircle;
 	vector<sBall> vecBalls;
 	sBall *pSelectedBall = nullptr;		// comment this to avoid mouse selection
+
 
 
 	// Adds a ball to the vector
@@ -41,7 +61,7 @@ private:
 		sBall b;
 		b.px = x; b.py = y;
 		//b.vx = rand()%50-25; b.vy = rand()%50-2.5;	//brownian motion condition
-		b.vx = rand() % 86 ; b.vy = rand() % 10 - 5;	//flow conditon vy - temperature
+		b.vx = rand() % 40; b.vy = rand() % 10 - 5;	//flow conditon vy - temperature
 		b.ax = 0; b.ay = 0;
 		b.radius = r;
 		b.mass = r * 10.0f;
@@ -50,25 +70,65 @@ private:
 		vecBalls.emplace_back(b);
 	}
 
-	/*
-	void CountData(auto &ball)
+	
+	void CountData(float *py, float *vx, vector<int>* pyTab, vector<int>* vxTab)
 	{
-		//count the average move of the balls
-		int pyHorizontal[100] = {};	//initialize array for positions of balls Y only 
-		int vyHorizontal[100] = {};	//initialize array for velocities balls Y coord
+		//if ((*py < 0) && (*py > 150))	
+		//	*py = 152;
 
-		int pyBox =((ScreenHeight() - ball.py) / 101);
-		pyHorizontal[pyBox]++;
-		int pyBox = 0;
+		/*
+		if (checker == 0)
+		{
+			pyTab->clear();
+			vxTab->clear();
+			
+		}
+		*/
+		if ((checker == 0) && (checker1==0))
+		{
+			pyTab->resize(156);
+			vxTab->resize(156);
+		}
 		
-		//vector<sBall> vecBalls;
+		//pyTab->push_back(*py);
+		//vxTab->push_back(*vx);
+		
 
+		//int py1 = *py;
+		int vx1 = *vx;
 
+		pyTab->at(*py) += 1;
+		vxTab->at(*py) += vx1;
+
+		//pyTab[*py] += 1;
+		//vxTab[*py] += *vx;
 
 
 	}
-	*/
 
+	
+	void SaveLog(int *pyTab, int *vxTab)
+	{
+		//save data into file
+		fstream log("log.txt", ios::out);
+
+		if ((checker == 0) && (checker1 == 0))
+		{
+			log << "Data balls passing througth the wall, position and speed " << endl << endl;
+			log << "Position Y,, Speed" << endl;
+			log << "Place, Number of events, Cummulative Speed" << endl;
+		}
+		
+		int SV = ScreenHeight();
+		for (int i = 0; i < SV; i++)
+			log << (i+1) << ", " << (pyTab[i])<< ", " << (vxTab[i] )<<endl;
+		log << endl << checker<<endl;
+		//ios::ate;
+		log.close();
+
+	}
+
+	
 
 public:
 	bool OnUserCreate()
@@ -87,7 +147,7 @@ public:
 		int ballsScale = 3;	//set scale of the balls 2-very small, 5- quite big
 		int ballsDiffrence = 1; //1 - the same balls, - larger - larger diffence between balls
 
-		for (int i = 0; i <300; i++)		// Add X Random Balls
+		for (int i = 0; i <150; i++)		// Add X Random Balls
 
 			AddBall(rand() % ScreenWidth(), rand() % ScreenHeight(), rand() % ballsDiffrence + ballsScale);
 			//std::this_thread::sleep_for(std::chrono::milliseconds(777));
@@ -106,50 +166,10 @@ public:
 		{
 			return fabs((x1 - px)*(x1 - px) + (y1 - py)*(y1 - py)) < (r1 * r1);
 		};
-		//		/*	//comment this to avoid mouse selection
-		if (m_mouse[0].bPressed || m_mouse[1].bPressed)		//what happend if we click on mouse button
-		{
-			pSelectedBall = nullptr;
-			for (auto &ball : vecBalls)
-			{
-				if (IsPointInCircle(ball.px, ball.py, ball.radius, m_mousePosX, m_mousePosY))
-				{
-					pSelectedBall = &ball;
-					break;
-				}
-			}
-		}
 
-		if (m_mouse[1].bHeld)		//what happend if we stay on clicked left button
-		{
-			if (pSelectedBall != nullptr)
-			{
-				pSelectedBall->px = m_mousePosX;	//we are setting coordinates by dragging with mouse
-				pSelectedBall->py = m_mousePosY;
-			}
-		}
-
-		if (m_mouse[1].bReleased)	
-		{
-			pSelectedBall = nullptr;
-		}
-
-		if (m_mouse[0].bReleased)	//what happend if we relase click on mouse left button
-		{
-			if (pSelectedBall != nullptr)
-			{
-				// Apply velocity
-				pSelectedBall->vx = 100.0f * ((pSelectedBall->px) - (float)m_mousePosX);
-				pSelectedBall->vy = 100.0f * ((pSelectedBall->py) - (float)m_mousePosY);
-			}
-
-			pSelectedBall = nullptr;
-		}
-		//		*/   //comment this to avoid mouse selection
+		//fElapsedTime /= 4;
 
 		vector<pair<sBall*, sBall*>> vecCollidingPairs;		//select colliding balls
-
-		
 
 		// Update Ball Positions
 
@@ -160,8 +180,8 @@ public:
 			float frictionY = 0.2;
 
 			// Add Drag to emulate rolling friction
-			ball.ax = -ball.vx * frictionX;
-			ball.ay = -ball.vy * frictionY;
+			//ball.ax = -ball.vx * frictionX;
+			//ball.ay = -ball.vy * frictionY;
 
 			// Update ball physics
 			ball.vx += ball.ax * fElapsedTime;
@@ -170,15 +190,15 @@ public:
 			ball.py += ball.vy * fElapsedTime;
 
 			
-			float frictionWx = 0.4;		//set friction on walls x
+			float frictionWx = 0.8;		//set friction on walls x
 			float frictionWy = 0.8;		//set friction on walls y
 			
 			frictionWx = fabsl(1 - frictionWx);
 			frictionWx = fabsl(1 - frictionWy);
 			// Wrap the balls around screen
 			
-			int speeding = 58; // set speeding constant on x wall
-
+			int speeding = 30; // set speeding constant on x wall
+			
 			if (ball.px < 0)
 			{
 				ball.px += (float)ScreenWidth();
@@ -187,6 +207,16 @@ public:
 			{ 
 				ball.px -= (float)ScreenWidth();
 				ball.vx += speeding;
+			}
+			if (checker1 == 0)
+			{
+				CountData(&ball.py, &ball.vx, &pyTab, &vxTab);
+				checker++;
+			}
+			if ((checker == vMax) && (checker1 == 0))
+			{
+				SaveLog(&pyTab[0], &vxTab[0]);
+				checker1 = 1;
 
 			}
 
@@ -300,31 +330,79 @@ public:
 		if (pSelectedBall != nullptr)																				//comment this to avoid mouse selection
 			DrawLine(pSelectedBall->px, pSelectedBall->py, m_mousePosX, m_mousePosY, FG_BLUE);			//comment this to avoid mouse selection
 
+
+
+
+
 		return true;
 
 	}
-	
-	
-
 
 };
 
-
-int main()
+int hello(int &choice)
 {
-	CirclePhysics game;
-	int resolution = 4;					//	8 in error
-	int height = 800/resolution;		//	1360/resolution		160 - in error
-	int length = 600/resolution;		//	760 / resolution	120 - in error
+	std::cout << "------------------------------------------------" << std::endl;
+	std::cout << "Balls simulation" << std::endl;
+	std::cout << "------------------------------------------------";
+	std::cout << std::endl << "Please choose your way of running program:          ||| Type 0 or 3 or exit to exit" << std::endl;
+	std::cout << "1. Run with Logfile - Standard settigs" << std::endl;
+	std::cout << "2. Set up Your screen resolution" << std::endl;
+	std::cout << "3. Exit" << std::endl << std::endl;
+	std::cin >> choice;
 	
+	return choice;
+
+}
+
+int setScreen(int &h, int &l, int &r)
+{
+	cout << "Set up hight of the screen" << endl;
+	cin >> h;
+	cout << "Set up length of the screen" << endl;
+	cin >> l;
+	cout << "Set up resolution" << endl;
+	cin >> r;
+	h = h / r;
+	l = l / r;
+	return h, l, r;
+}
+
+
+void iniciate(int height, int length, int resolution)
+{
+	bool c = 1;
+	CirclePhysics game;
+	
+
 	if (game.ConstructConsole(height, length, resolution, resolution))		// if program exit with 0x0 try this setting  - fixed resolution (160, 120, 8, 8) an
 		game.Start();
+
 	else
 		wcout << L"Could not construct console" << endl;
+}
 
-	
 
+int main()
+{	
+	int c;
+	hello(c);
+	cout << c;
 
+	int resolution = 4;					//	8 in error
+	int height = 800 / resolution;		//	1360/resolution		160 - in error
+	int length = 600 / resolution;		//	760 / resolution	120 - in error
+
+	if (c == 1) 
+	{
+		iniciate(height, length, resolution);
+	}
+	if (c = 2)
+	{
+		setScreen(height, length, resolution);
+		iniciate(height, length, resolution);
+	}
+	else	cout << "goodbye";
 
 	return 0;
 };
