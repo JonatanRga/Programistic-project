@@ -36,7 +36,7 @@ public:
 
 	int checker = 0;
 	bool checker1 = 0;
-	int vMax = 11000;
+	int vMax = 100000;
 
 	bool exit(bool c)
 	{
@@ -176,8 +176,8 @@ public:
 		for (auto &ball : vecBalls)
 		{
 
-			float frictionX = 0.2;		//set friction beetween balls		 1.0-nofriction	0.1<flows	0.17>stucks
-			float frictionY = 0.2;
+			//float frictionX = 0.2;		//set friction beetween balls		 1.0-nofriction	0.1<flows	0.17>stucks
+			//float frictionY = 0.2;
 
 			// Add Drag to emulate rolling friction
 			//ball.ax = -ball.vx * frictionX;
@@ -190,14 +190,14 @@ public:
 			ball.py += ball.vy * fElapsedTime;
 
 			
-			float frictionWx = 0.8;		//set friction on walls x
-			float frictionWy = 0.8;		//set friction on walls y
+			float frictionWx = 0.7;		//set friction on walls x
+			float frictionWy = 0.7;		//set friction on walls y
 			
 			frictionWx = fabsl(1 - frictionWx);
-			frictionWx = fabsl(1 - frictionWy);
+			frictionWy = fabsl(1 - frictionWy);
 			// Wrap the balls around screen
 			
-			int speeding = 30; // set speeding constant on x wall
+			int speeding = 75; // set speeding constant on x wall
 			
 			if (ball.px < 0)
 			{
@@ -283,9 +283,12 @@ public:
 			float nx = (b2->px - b1->px) / fDistance;
 			float ny = (b2->py - b1->py) / fDistance;
 
+			float frictionX = (1-0.1);		//set friction beetween balls		 1.0-nofriction	0.1<flows	0.17>stucks
+			float frictionY = (1-0.1);
+
 			// Tangent
-			float tx = -ny;
-			float ty = nx;
+			float tx = -ny * frictionX;
+			float ty = nx * frictionY;
 
 			// Dot Product Tangent
 			float dpTan1 = b1->vx * tx + b1->vy * ty;
