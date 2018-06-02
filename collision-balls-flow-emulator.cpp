@@ -36,7 +36,7 @@ public:
 
 	int checker = 0;
 	bool checker1 = 0;
-	int vMax = 90000000;
+	int vMax = 1000000;
 
 
 private:
@@ -154,7 +154,7 @@ public:
 		for (auto &ball : vecBalls)
 		{
 
-			//float frictionX = 0.2;		//set friction beetween balls		 1.0-nofriction	0.1<flows	0.17>stucks
+			//float frictionX = 0.2;		//set friction while moving	 1.0-nofriction	0.1<flows	0.17>stucks
 			//float frictionY = 0.2;
 
 			// Add Drag to emulate rolling friction
@@ -175,7 +175,7 @@ public:
 			frictionWy = fabsl(1 - frictionWy);
 			// Wrap the balls around screen
 			
-			int speeding = 75; // set speeding constant on x wall
+			int speeding = 100; // set speeding constant on x wall
 			
 			if (ball.px < 0)
 			{
@@ -285,15 +285,6 @@ public:
 			b1->vy = ty * dpTan1 + ny * m1;
 			b2->vx = tx * dpTan2 + nx * m2;
 			b2->vy = ty * dpTan2 + ny * m2;
-
-			// Wikipedia Version - Maths is smarter but same
-			//float kx = (b1->vx - b2->vx);
-			//float ky = (b1->vy - b2->vy);
-			//float p = 2.0 * (nx * kx + ny * ky) / (b1->mass + b2->mass);
-			//b1->vx = b1->vx - p * b2->mass * nx;
-			//b1->vy = b1->vy - p * b2->mass * ny;
-			//b2->vx = b2->vx + p * b1->mass * nx;
-			//b2->vy = b2->vy + p * b1->mass * ny;
 		}
 
 		// Clear Screen
@@ -302,19 +293,7 @@ public:
 		// Draw Balls
 		for (auto ball : vecBalls)
 			DrawWireFrameModel(modelCircle, ball.px, ball.py, atan2f(ball.vy, ball.vx), ball.radius, FG_WHITE);
-
-		// Draw static collisions
-		//for (auto c : vecCollidingPairs)
-		//	DrawLine(c.first->px, c.first->py, c.second->px, c.second->py, PIXEL_SOLID, FG_RED);
-
-		// Draw Cue
-		if (pSelectedBall != nullptr)																				//comment this to avoid mouse selection
-			DrawLine(pSelectedBall->px, pSelectedBall->py, m_mousePosX, m_mousePosY, FG_BLUE);			//comment this to avoid mouse selection
-
-
-
-
-
+		
 		return true;
 
 	}
