@@ -36,16 +36,7 @@ public:
 
 	int checker = 0;
 	bool checker1 = 0;
-	int vMax = 1000000;
-
-	bool exit(bool c)
-	{
-		if (m_mouse[0].bPressed || m_mouse[1].bPressed)		//what happend if we click on mouse button
-		{
-			c = 0;
-		}
-		return c;
-	}
+	int vMax = 100000;
 
 
 private:
@@ -131,7 +122,7 @@ public:
 		//AddBall(ScreenWidth() * 0.75f, ScreenHeight() * 0.5f, fDefaultRad);
 
 		
-		int ballsScale = 3;	//set scale of the balls 2-very small, 5- quite big
+		int ballsScale = 4;	//set scale of the balls 2-very small, 5- quite big
 		int ballsDiffrence = 1; //1 - the same balls, - larger - larger diffence between balls
 
 		for (int i = 0; i <150; i++)		// Add X Random Balls
@@ -336,7 +327,7 @@ int hello(int &choice)
 	std::cout << "------------------------------------------------";
 	std::cout << std::endl << "Please choose your way of running program:          ||| Type 0 or 3 or exit to exit" << std::endl;
 	std::cout << "1. Run with Logfile - Standard settigs" << std::endl;
-	std::cout << "2. Set up Your screen resolution" << std::endl;
+	std::cout << "2. Set up Your screen resolution and run with logfile" << std::endl;
 	std::cout << "3. Exit" << std::endl << std::endl;
 	std::cin >> choice;	std::cout << std::endl;
 	return choice;
@@ -344,11 +335,11 @@ int hello(int &choice)
 
 int setScreen(int &l, int &h, int &r)
 {
-	cout << "Set up length of the screen" << endl;
+	cout << "Set up width of the screen" << endl;
 	cin >> l;
 	cout << "Set up hight of the screen" << endl;
 	cin >> h;
-	cout << "Set up resolution" << endl;
+	cout << "Pixel size (3-recommended)" << endl;
 	cin >> r;
 	h = h / r;
 	l = l / r;
@@ -358,13 +349,9 @@ int setScreen(int &l, int &h, int &r)
 
 void iniciate(int height, int length, int resolution)
 {
-	bool c = 1;
 	CirclePhysics game;
-	
-
 	if (game.ConstructConsole(height, length, resolution, resolution))		// if program exit with 0x0 try this setting  - fixed resolution (160, 120, 8, 8) an
 		game.Start();
-
 	else
 		wcout << L"Could not construct console" << endl;
 }
@@ -375,18 +362,18 @@ int main()
 	int c;
 	hello(c);
 
-	int resolution = 4;					//recommended from 2 to 8
-	int height = 600 / resolution;		
-	int length = 800 / resolution;		
+	int resolution = 2;					//recommended from 2 to 8 - pixel size
+	int height = 400 / resolution;		
+	int width = 1000 / resolution;
 
 	if (c == 1) 
 	{
-		iniciate(length, height, resolution);
+		iniciate(width, height, resolution);
 	}
 	if (c = 2)
 	{
-		setScreen(length, height, resolution);
-		iniciate(length, height, resolution);
+		setScreen(width, height, resolution);
+		iniciate(width, height, resolution);
 	}
 	else	cout << "goodbye";
 
