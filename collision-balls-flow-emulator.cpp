@@ -36,7 +36,7 @@ public:
 
 	int checker = 0;
 	bool checker1 = 0;
-	int vMax = 100000;
+	int vMax = 1000000;
 
 
 private:
