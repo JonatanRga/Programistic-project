@@ -36,7 +36,7 @@ public:
 
 	int checker = 0;
 	bool checker1 = 0;
-	int vMax = 70000;
+	int vMax = 100000;
 
 	bool exit(bool c)
 	{
@@ -73,13 +73,14 @@ private:
 	
 	void CountData(float *py, float *vx, vector<int>* pyTab, vector<int>* vxTab)
 	{
-		if ((*py < 0) && (*py > 150))	//protects aganist save value pose vector
-			*py = 152;
+		int SV = ScreenHeight();
+		if ((*py < 0) && (*py > SV))	//protects aganist save value pose vector
+			*py = SV+2;
 
 		if ((checker == 0) && (checker1==0)) //initiate size of vector just once
 		{
-			pyTab->resize(156);
-			vxTab->resize(156);
+			pyTab->resize((SV+3));
+			vxTab->resize((SV+3));
 		}
 		
 		//pyTab->push_back(*py);
@@ -99,12 +100,11 @@ private:
 		//save data into file
 		fstream log("log.txt", ios::out);
 
-		if ((checker == 0) && (checker1 == 0))
-		{
-			log << "Data balls passing througth the wall, position and speed " << endl << endl;
-			log << "Position Y,, Speed" << endl;
-			log << "Place, Number of events, Cummulative Speed" << endl;
-		}
+		
+		log << "Data balls passing througth the wall, position and speed " << endl << endl;
+		log << "Hole - Number of place in the screen - depends on Height of the screen , Counted balls in this hole, Sum of balls speed" << endl;
+		log << "Place, Number of events, Cummulative Speed" << endl;
+		
 		
 		int SV = ScreenHeight();
 		for (int i = 0; i < SV; i++)
