@@ -338,23 +338,21 @@ int hello(int &choice)
 	std::cout << "1. Run with Logfile - Standard settigs" << std::endl;
 	std::cout << "2. Set up Your screen resolution" << std::endl;
 	std::cout << "3. Exit" << std::endl << std::endl;
-	std::cin >> choice;
-	
+	std::cin >> choice;	std::cout << std::endl;
 	return choice;
-
 }
 
-int setScreen(int &h, int &l, int &r)
+int setScreen(int &l, int &h, int &r)
 {
-	cout << "Set up hight of the screen" << endl;
-	cin >> h;
 	cout << "Set up length of the screen" << endl;
 	cin >> l;
+	cout << "Set up hight of the screen" << endl;
+	cin >> h;
 	cout << "Set up resolution" << endl;
 	cin >> r;
 	h = h / r;
 	l = l / r;
-	return h, l, r;
+	return l, h, r;
 }
 
 
@@ -377,18 +375,18 @@ int main()
 	int c;
 	hello(c);
 
-	int resolution = 4;					//	8 in error
-	int height = 800 / resolution;		//	1360/resolution		160 - in error
-	int length = 600 / resolution;		//	760 / resolution	120 - in error
+	int resolution = 4;					//recommended from 2 to 8
+	int height = 800 / resolution;		
+	int length = 600 / resolution;		
 
 	if (c == 1) 
 	{
-		iniciate(height, length, resolution);
+		iniciate(length, height, resolution);
 	}
 	if (c = 2)
 	{
-		setScreen(height, length, resolution);
-		iniciate(height, length, resolution);
+		setScreen(length, height, resolution);
+		iniciate(length, height, resolution);
 	}
 	else	cout << "goodbye";
 
