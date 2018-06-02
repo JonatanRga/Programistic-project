@@ -36,7 +36,7 @@ public:
 
 	int checker = 0;
 	bool checker1 = 0;
-	int vMax = 100000;
+	int vMax = 1000000;
 
 	bool exit(bool c)
 	{
@@ -376,8 +376,8 @@ int main()
 	hello(c);
 
 	int resolution = 4;					//recommended from 2 to 8
-	int height = 800 / resolution;		
-	int length = 600 / resolution;		
+	int height = 600 / resolution;		
+	int length = 800 / resolution;		
 
 	if (c == 1) 
 	{
