@@ -36,7 +36,7 @@ public:
 
 	int checker = 0;
 	bool checker1 = 0;
-	int vMax = 1000000;
+	int vMax = 90000000;
 
 
 private:
@@ -201,17 +201,18 @@ public:
 			if (ball.py < ball.radius)	//if (ball.py < ScreenHeight()) ball.py += (float)ScreenHeight();     <- for overlap in y
 			{
 				//ball.py += (float)ScreenHeight();
+				ball.py= (int) (ball.radius);
 				ball.vx *= (frictionWx);
 				ball.vy *= (-1)*(frictionWy);
-				ball.py++;
+				
 			}
 				
-			if (ball.py >=	(ScreenHeight()-ball.radius))	//if (ball.py >= ScreenHeight()) ball.py -= (float)ScreenHeight();	<- for overlap in y
+			if (ball.py > (ScreenHeight()-ball.radius))	//if (ball.py >= ScreenHeight()) ball.py -= (float)ScreenHeight();	<- for overlap in y
 			{
 				//ball.py -= (float)ScreenHeight();
+				ball.py = (int)(ScreenHeight() - ball.radius);
 				ball.vx *= (frictionWx);
 				ball.vy *= (-1)*(frictionWy);
-				ball.py--;
 			}
 			
 		
