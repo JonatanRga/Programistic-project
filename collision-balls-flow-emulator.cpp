@@ -74,7 +74,7 @@ private:
 	void CountData(float *py, float *vx, vector<int>* pyTab, vector<int>* vxTab)
 	{
 		int SV = ScreenHeight();
-		if ((*py < 0) && (*py > SV))	//protects aganist save value pose vector
+		if ((*py < 0) || (*py > SV))	//protects aganist save value pose vector
 			*py = SV+2;
 
 		if ((checker == 0) && (checker1==0)) //initiate size of vector just once
@@ -376,7 +376,6 @@ int main()
 {	
 	int c;
 	hello(c);
-	cout << c;
 
 	int resolution = 4;					//	8 in error
 	int height = 800 / resolution;		//	1360/resolution		160 - in error
