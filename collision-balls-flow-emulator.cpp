@@ -36,7 +36,7 @@ public:
 
 	int checker = 0;
 	bool checker1 = 0;
-	int vMax = 100000;
+	int vMax = 70000;
 
 	bool exit(bool c)
 	{
@@ -73,18 +73,10 @@ private:
 	
 	void CountData(float *py, float *vx, vector<int>* pyTab, vector<int>* vxTab)
 	{
-		//if ((*py < 0) && (*py > 150))	
-		//	*py = 152;
+		if ((*py < 0) && (*py > 150))	//protects aganist save value pose vector
+			*py = 152;
 
-		/*
-		if (checker == 0)
-		{
-			pyTab->clear();
-			vxTab->clear();
-			
-		}
-		*/
-		if ((checker == 0) && (checker1==0))
+		if ((checker == 0) && (checker1==0)) //initiate size of vector just once
 		{
 			pyTab->resize(156);
 			vxTab->resize(156);
@@ -93,17 +85,12 @@ private:
 		//pyTab->push_back(*py);
 		//vxTab->push_back(*vx);
 		
-
-		//int py1 = *py;
-		int vx1 = *vx;
-
-		pyTab->at(*py) += 1;
-		vxTab->at(*py) += vx1;
+		pyTab->at(*py) += 1;		//one more ball in a 'hole'
+		vxTab->at(*py) += *vx;		//add velocity of the ball to this vector in ball position
 
 		//pyTab[*py] += 1;
 		//vxTab[*py] += *vx;
-
-
+		
 	}
 
 	
@@ -217,7 +204,6 @@ public:
 			{
 				SaveLog(&pyTab[0], &vxTab[0]);
 				checker1 = 1;
-
 			}
 
 
